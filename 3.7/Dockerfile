@@ -28,18 +28,30 @@ RUN apt-get update \
 	&& apt-get install -y cassandra="$CASSANDRA_VERSION" \
 	&& rm -rf /var/lib/apt/lists/*
 
-# https://issues.apache.org/jira/browse/CASSANDRA-11661
-RUN sed -ri 's/^(JVM_PATCH_VERSION)=.*/\1=25/' /etc/cassandra/cassandra-env.sh
+RUN echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' >> /etc/apt/sources.list.d/java-8-debian.list \
+	&& apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 \
+	&& echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
+	&& echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
+
+RUN apt-get update \
+	&& apt-get install -y oracle-java8-installer
 
 ENV CASSANDRA_CONFIG /etc/cassandra
-
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-ENTRYPOINT ["/docker-entrypoint.sh"]
 
 RUN mkdir -p /var/lib/cassandra "$CASSANDRA_CONFIG" \
 	&& chown -R cassandra:cassandra /var/lib/cassandra "$CASSANDRA_CONFIG" \
 	&& chmod 777 /var/lib/cassandra "$CASSANDRA_CONFIG"
-VOLUME /var/lib/cassandra
+#VOLUME /var/lib/cassandra
+
+COPY cassandra.yaml "$CASSANDRA_CONFIG"
+COPY cassandra-env.sh "$CASSANDRA_CONFIG"
+
+# https://issues.apache.org/jira/browse/CASSANDRA-11661
+RUN apt-get install -y curl
+RUN sed -ri 's/^(JVM_PATCH_VERSION)=.*/\1=25/' /etc/cassandra/cassandra-env.sh
+
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # 7000: intra-node communication
 # 7001: TLS intra-node communication

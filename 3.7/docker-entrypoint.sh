@@ -51,6 +51,8 @@ if [ "$1" = 'cassandra' ]; then
 		fi
 	done
 
+	cat "$CASSANDRA_CONFIG/cassandra.yaml"
+
 	for rackdc in dc rack; do
 		var="CASSANDRA_${rackdc^^}"
 		val="${!var}"
