@@ -18,6 +18,9 @@ RUN set -x \
 	&& gosu nobody true \
 	&& apt-get purge -y --auto-remove ca-certificates wget
 
+# solves warning: "jemalloc shared library could not be preloaded to speed up memory allocations"
+RUN apt-get update && apt-get install -y --no-install-recommends libjemalloc1 && rm -rf /var/lib/apt/lists/*
+
 # https://wiki.apache.org/cassandra/DebianPackaging#Adding_Repository_Keys
 ENV GPG_KEYS \
 # gpg: key 0353B12C: public key "T Jake Luciani <jake@apache.org>" imported
@@ -31,7 +34,7 @@ RUN set -ex \
 
 RUN echo 'deb http://www.apache.org/dist/cassandra/debian 30x main' >> /etc/apt/sources.list.d/cassandra.list
 
-ENV CASSANDRA_VERSION 3.0.9
+ENV CASSANDRA_VERSION 3.0.10
 
 RUN apt-get update \
 	&& apt-get install -y cassandra="$CASSANDRA_VERSION" \
