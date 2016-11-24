@@ -436,6 +436,7 @@ concurrent_materialized_view_writes: 32
 # If omitted, Cassandra will set both to 1/4 the size of the heap.
 # memtable_heap_space_in_mb: 2048
 # memtable_offheap_space_in_mb: 2048
+memtable_offheap_space_in_mb: 8192
 
 # Ratio of occupied non-flushing memtable size to total permitted size
 # that will trigger a flush of the largest memtable. Larger mct will

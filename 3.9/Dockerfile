@@ -54,6 +54,7 @@ RUN mkdir -p /var/lib/cassandra "$CASSANDRA_CONFIG" \
 
 COPY cassandra.yaml "$CASSANDRA_CONFIG"
 COPY cassandra-env.sh "$CASSANDRA_CONFIG"
+COPY jvm.options "$CASSANDRA_CONFIG"
 
 # https://issues.apache.org/jira/browse/CASSANDRA-11661
 RUN apt-get install -y curl
